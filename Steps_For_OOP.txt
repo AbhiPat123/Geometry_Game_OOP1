@@ -1,0 +1,4 @@
+1. Write objects for the problem
+2. Write classes for each object
+3. Write methods for each class
+4. Call classes and methods (instantiation and rnning functions)
