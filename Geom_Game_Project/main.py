@@ -3,6 +3,7 @@ print("Running main.py ...")
 # MODULE IMPORTS
 import turtle
 from random import randint
+from os import system
 
 
 # CLASS DEFINITONS
@@ -19,15 +20,14 @@ class Point:
         else:
             return False
 
-    def distance_from_point(self, point):
-        if self.x == point.x:
-            return abs(point.y - self.y)
-        elif self.y == point.y:
-            return abs(point.x - self.x)
-        else:
-            x_dist_sqrd = (self.x - point.x) ** 2
-            y_dist_sqrd = (self.y - point.y) ** 2
-            return (x_dist_sqrd + y_dist_sqrd) ** 0.5
+
+class PointGraphics(Point):
+    def draw(self, canvas, size=5, color='red'):
+        canvas.hideturtle()
+        canvas.penup()
+        canvas.goto(self.x, self.y)
+        canvas.pendown()
+        canvas.dot(size, color)
 
 
 class Rectangle:
@@ -63,14 +63,46 @@ class RectangleGraphics(Rectangle):
         canvas.left(90)
         canvas.forward(rect_height)
         canvas.left(90)
-
         print("... rectangle drawn!")
 
 
-rectangle_graphics = RectangleGraphics(Point(randint(0, 100), randint(0, 100)), \
-                                       Point(randint(150, 250), randint(150, 250)))
-myturtle = turtle.Turtle()
-rectangle_graphics.draw(myturtle)
+def user_clicked_point(c_trtl, d_trtl, x, y):
+    # clear terminal screen
+    system('cls')
+
+    # clear screen details
+    d_trtl.clear()
+
+    # go to clicked point
+    c_trtl.penup()
+    c_trtl.goto(x, y)
+    c_trtl.pendown()
+    # draw point using draw turtle
+    point_graphics = PointGraphics(x, y)
+    point_graphics.draw(d_trtl)
+
+    # creating random rectangle
+    rectangle_graphics = RectangleGraphics(Point(randint(-250, 0), randint(-250, 0)), \
+                                           Point(randint(0, 250), randint(0, 250)))
+    # let the draw turtle draw rectangle
+    rectangle_graphics.draw(d_trtl)
+
+    in_rectangle = Point(x, y).falls_in_rectangle(Rectangle(rectangle_graphics.point1, \
+                                                            rectangle_graphics.point2))
+    if in_rectangle:
+        print("In the rectangle!")
+    else:
+        print("Oops! Try again.")
+
+
+# start GUI for turtle graphics
+click_turtle = turtle.Turtle()
+click_turtle.hideturtle()
+click_turtle.speed(10)
+draw_turtle = turtle.Turtle()
+draw_turtle.hideturtle()
+draw_turtle.speed(5)
+turtle.onscreenclick(fun=lambda x, y: user_clicked_point(click_turtle, draw_turtle, x, y))
 turtle.done()
 
 # # RUNNING GAME CODE
